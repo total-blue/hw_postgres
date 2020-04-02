@@ -25,14 +25,9 @@ def create_db():
 def get_students(course_id):
     with pg.connect(dbname='hw_db', user='u', password='pass') as conn:
         with conn.cursor() as cur:
-            cur.execute("""select * from student_course where course_id = %s""", (course_id,))
+            cur.execute("""select student.* from (student inner join student_course on student.id = student_course.student_id) where student_course.course_id = %s""", (course_id,))
             resp = cur.fetchall()
-            res = []
-            keys = ['id', 'name', 'gpa', 'birth']
-            for r in resp:
-                cur.execute("""select * from student where id = %s""", (r[1],))
-                res.append(cur.fetchall())
-            return res
+            return(resp)
 
 def add_student(student):
     with pg.connect(dbname='hw_db', user='u', password='pass') as conn:
@@ -62,3 +57,4 @@ def get_student(id):
             cur.execute("""select * from student where id=%s""", (id,))
             x = cur.fetchall()
             return x
+print(get_students(201))
